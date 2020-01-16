@@ -31,3 +31,10 @@
 
 en:
   hello: "Hello world"
+  controllers:
+    api:
+      v1:
+        base:
+          user_not_authorized: "You are not authorized to perform this action."
+        employees:
+          get_employee: "Employee not found."
