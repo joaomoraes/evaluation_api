@@ -6,7 +6,6 @@ RSpec.describe "Employees/Create", type: :request do
     create_list(:user, 3, :admin)
     create_list(:user, 5, :employee)
   end
-  let(:employee) { User.employee.last }
   let(:response_to_json) { JSON.parse response.body }
   let(:create_employee_params) do
     { 

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe "Employees/Show", type: :request do
+RSpec.describe "Employees/Destroy", type: :request do
   before do
     create_list(:user, 3, :admin)
     create_list(:user, 5, :employee)
   end
-  let(:employee) { User.employee.last }
+  let(:employee_id) { User.employee.last.id }
   let(:response_to_json) { JSON.parse response.body }
 
   describe 'signed in' do
@@ -14,28 +14,26 @@ RSpec.describe "Employees/Show", type: :request do
       let(:admin_user) { create :user, :admin }
       sign_in(:admin_user)
 
-      describe 'requesting a valid employee id' do
-
+      describe 'destroy valid employee id' do
         it 'should respond with success' do
-          get employee_path(id: employee.id)
+          delete employee_path(id: employee_id)
           expect(response).to have_http_status(:success)
           expect(response_to_json).not_to be_empty
+          expect{ User.find(employee_id) }.to raise_error(ActiveRecord::RecordNotFound)
         end
       end
 
-      describe 'requesting an invalid employee id' do
-        let(:invalid_employee_id) { User.maximum(:id) + 10 }
+      describe 'destroy valid admin id' do
         it 'should respond with not_found' do
-          get employee_path(id: invalid_employee_id)
+          delete employee_path(id: User.admin.maximum(:id))
           expect(response).to have_http_status(:not_found)
           expect(response_to_json).to include('errors')
-          expect(response_to_json['errors']).to include(I18n.t('controllers.api.v1.employees.get_employee'))
         end
       end
 
-      describe 'requesting admin' do
+      describe 'destroy invalid user id' do
         it 'should respond with not_found' do
-          get employee_path(id: User.admin.maximum(:id))
+          delete employee_path(id: User.maximum(:id) + 1)
           expect(response).to have_http_status(:not_found)
           expect(response_to_json).to include('errors')
         end
@@ -47,21 +45,23 @@ RSpec.describe "Employees/Show", type: :request do
       sign_in(:employee_user)
 
       it 'should respond with unauthorized' do
-        get employee_path(id: employee.id)
+        delete employee_path(id: employee_id)
 
         expect(response).to have_http_status(:unauthorized)
         expect(response_to_json).to include('errors')
         expect(response_to_json['errors']).to include(I18n.t('controllers.api.v1.base.user_not_authorized'))
+        expect{ User.find(employee_id) }.not_to raise_error
       end
     end
   end
 
   describe 'signed out' do
     it 'should respond with unauthorized' do
-      get employee_path(id: employee.id)
+      delete employee_path(id: employee_id)
       expect(response).to have_http_status(:unauthorized)
       expect(response_to_json).to include('errors')
       expect(response_to_json['errors']).not_to be_empty
+      expect{ User.find(employee_id) }.not_to raise_error
     end
   end
 end

@@ -9,22 +9,33 @@ class Api::V1::EmployeesController < Api::V1::BaseController
   end
 
   def create
-    if ['password', 'password_confirmation'].none? { |key| employee_params.key? key }
-      employee_params['password'] = Devise.friendly_token.first(8) 
-    end
-    @employee = User.employee.create(employee_params)
-    if @employee.valid?
-      render json: @employee
-    else
-      error_message message: @employee.errors.messages, status: :unprocessable_entity
-    end
+    @employee = CrudEmployeeService.create(employee_params)
+    display_saved_employee
   end
 
   def show
     render json: @employee
   end
 
+  def update
+    @employee.update employee_params
+    display_saved_employee
+  end
+
+  def destroy
+    @employee.destroy
+    render json: @employee
+  end
+
   private
+
+  def display_saved_employee
+    if @employee.valid?
+      render json: @employee
+    else
+      error_message message: @employee.errors.messages, status: :unprocessable_entity
+    end
+  end
 
   def get_employee
     begin
