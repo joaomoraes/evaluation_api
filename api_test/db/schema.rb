@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_31_001709) do
+ActiveRecord::Schema.define(version: 2020_01_20_145513) do
+
+  create_table "performance_evaluations", force: :cascade do |t|
+    t.integer "evaluator_id", null: false
+    t.integer "target_id", null: false
+    t.text "description", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["evaluator_id"], name: "index_performance_evaluations_on_evaluator_id"
+    t.index ["target_id"], name: "index_performance_evaluations_on_target_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "provider", default: "email", null: false

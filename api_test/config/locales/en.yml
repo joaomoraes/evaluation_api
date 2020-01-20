@@ -38,3 +38,5 @@ en:
           user_not_authorized: "You are not authorized to perform this action."
         employees:
           get_employee: "Employee not found."
+        performance_evaluations:
+          get_performance_evaluation: "Performance Evaluation not found."

@@ -8,4 +8,6 @@ class User < ActiveRecord::Base
   include DeviseTokenAuth::Concerns::User
 
   enum role: { admin: 0, employee: 1 }
+  has_many :performance_evaluations_as_evaluator, class_name: "PerformanceEvaluation", foreign_key: "evaluator_id", inverse_of: :evaluator, dependent: :destroy
+  has_many :performance_evaluations_as_target, class_name: "PerformanceEvaluation", foreign_key: "target_id", inverse_of: :target, dependent: :destroy
 end
